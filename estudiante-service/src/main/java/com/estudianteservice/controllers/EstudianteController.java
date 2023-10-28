@@ -3,32 +3,29 @@ package com.estudianteservice.controllers;
 import com.estudianteservice.entities.EstudianteEntity;
 import com.estudianteservice.services.EstudianteService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-@Controller
-@RequestMapping
+@RestController
+@RequestMapping("/estudiantes")
 public class EstudianteController {
 
     @Autowired
     EstudianteService estudianteService;
 
 
-    @PostMapping("/guardar")
-    public String guardarEstudiante(@ModelAttribute EstudianteEntity estudiante) {
-        estudianteService.guardarEstudiante(estudiante);
-        return "redirect:/";
+    @GetMapping
+    public ResponseEntity<List<EstudianteEntity>> obtenerEstudiantes(){
+        List<EstudianteEntity> estudiantes = estudianteService.obtenerTodosLosEstudiantes();
+        if(estudiantes.isEmpty())
+            return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(estudiantes);
     }
 
-    @GetMapping("/estudiantes")
-    public String mostrarEstudiantes(Model model){
-        List<EstudianteEntity> estudianteEntities = estudianteService.obtenerTodosLosEstudiantes();
-        model.addAttribute("estudiantes", estudianteEntities);
-        return "listado-estudiantes";
+    @PostMapping
+    public void guardarEstudiante(@RequestBody EstudianteEntity estudiante){
+        estudianteService.guardarEstudiante(estudiante);
     }
+
 }

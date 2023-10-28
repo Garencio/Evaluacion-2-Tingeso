@@ -27,6 +27,17 @@ public class CuotaService {
     }
 
     @Transactional
+    public void generarMatricula(Long id_estudiante){
+        CuotaEntity cuota = new CuotaEntity();
+        cuota.setId_estudiante(id_estudiante);
+        cuota.setMonto(70000.0);
+        cuota.setMontoBase(70000.0);
+        cuota.setEstado(false);
+        cuota.setTipo("Matricula");
+        guardarCuota(cuota);
+    }
+
+    @Transactional
     public void pagarMatricula(Long id_estudiante){
         CuotaEntity cuota = cuotaRepository.findByIdAndTipoNativeQuery(id_estudiante, "Matricula");
 

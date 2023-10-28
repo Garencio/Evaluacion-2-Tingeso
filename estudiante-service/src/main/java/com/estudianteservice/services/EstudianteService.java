@@ -5,7 +5,6 @@ import com.estudianteservice.repositories.EstudianteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 
 @Service
@@ -22,8 +21,7 @@ public class EstudianteService {
         return estudianteRepository.findById(id_estudiante).orElse(null);
     }
 
-    public EstudianteEntity guardarEstudiante(EstudianteEntity estudiante) {
-        return estudianteRepository.save(estudiante);
-
+    public void guardarEstudiante(EstudianteEntity estudiante) {
+        estudianteRepository.save(estudiante);
     }
 }
