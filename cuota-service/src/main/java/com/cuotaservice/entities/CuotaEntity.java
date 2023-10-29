@@ -19,7 +19,9 @@ public class CuotaEntity {
     @Column(unique = true, nullable = false)
     private Long id;
 
-    private Long id_estudiante;
+    @Column(name = "idEstudiante")
+    private Long idEstudiante;
+
     private Double monto;
     private Double montoBase;
     private Boolean estado;

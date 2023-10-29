@@ -1,9 +1,11 @@
 package com.cuotaservice.services;
 
 import com.cuotaservice.entities.CuotaEntity;
+import com.cuotaservice.models.EstudianteModel;
 import com.cuotaservice.repositories.CuotaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
@@ -17,19 +19,38 @@ public class CuotaService {
     @Autowired
     CuotaRepository cuotaRepository;
 
-    public CuotaEntity guardarCuota(CuotaEntity cuota){
+    @Autowired
+    private RestTemplate restTemplate;
 
-        return cuotaRepository.save(cuota);
+    public void guardarCuota(CuotaEntity cuota){
+
+        cuotaRepository.save(cuota);
     }
 
-    public List<CuotaEntity> obtenerCuotasEstudiante(Long id_estudiante) {
-        return cuotaRepository.findById_estudiante(id_estudiante);
+    public List<CuotaEntity> obtenerCuotasEstudiante(Long idEstudiante) {
+        return cuotaRepository.findByIdEstudiante(idEstudiante);
+    }
+
+    public EstudianteModel buscarEstudiante(Long idEstudiante) {
+        try {
+            return restTemplate.getForObject("http://estudiante-service/estudiantes/" + idEstudiante, EstudianteModel.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al buscar el estudiante con ID: " + idEstudiante, e);
+        }
+    }
+
+    public Double obtenerPuntajePromedio(String rut){
+        try {
+            return restTemplate.getForObject("http://examen-service/examenes/puntaje-promedio/" + rut, Double.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al buscar el puntaje de: " + rut, e);
+        }
     }
 
     @Transactional
-    public void generarMatricula(Long id_estudiante){
+    public void generarMatricula(Long idEstudiante){
         CuotaEntity cuota = new CuotaEntity();
-        cuota.setId_estudiante(id_estudiante);
+        cuota.setIdEstudiante(idEstudiante);
         cuota.setMonto(70000.0);
         cuota.setMontoBase(70000.0);
         cuota.setEstado(false);
@@ -38,11 +59,11 @@ public class CuotaService {
     }
 
     @Transactional
-    public void pagarMatricula(Long id_estudiante){
-        CuotaEntity cuota = cuotaRepository.findByIdAndTipoNativeQuery(id_estudiante, "Matricula");
+    public void pagarMatricula(Long idEstudiante){
+        CuotaEntity cuota = cuotaRepository.findByIdAndTipoNativeQuery(idEstudiante, "Matricula");
 
         if(cuota == null) {
-            System.out.println("No se encontró la cuota de matrícula para el estudiante con ID: " + id_estudiante);
+            System.out.println("No se encontró la cuota de matrícula para el estudiante con ID: " + idEstudiante);
             return;
         }
         else{
@@ -55,16 +76,20 @@ public class CuotaService {
         }
     }
 
+
+
     @Transactional
-    public void generarCuotas(Long id_estudiante, int cuotas, String Tipo_Pago, String AñoEgresoColegio, String TipoColegio){
+    public void generarCuotas(Long idEstudiante){
+        EstudianteModel estudiante = buscarEstudiante(idEstudiante);
 
         double arancel = 1500000.0;
         double descuento = 0.0;
+        int cuotas = estudiante.getCantidad_cuotas();
 
-        if(Tipo_Pago.equals("Contado")){
+        if(estudiante.getTipodepago().equals("Contado")){
             CuotaEntity cuota = new CuotaEntity();
             cuota.setTipo("Unica Cuota");
-            cuota.setId_estudiante(id_estudiante);
+            cuota.setIdEstudiante(idEstudiante);
             cuota.setMonto(arancel/2);
             cuota.setMontoBase(arancel/2);
             cuota.setEstado(false);
@@ -73,7 +98,7 @@ public class CuotaService {
             cuotaRepository.save(cuota);
         }
         else{
-            switch (TipoColegio) {
+            switch (estudiante.getTipocolegio()) {
                 case "Municipal" -> {
                     descuento += 0.20;
                 }
@@ -83,7 +108,7 @@ public class CuotaService {
             }
 
             int AñoActual = LocalDate.now().getYear();
-            int AñoEgreso = AñoActual - Integer.parseInt(AñoEgresoColegio);
+            int AñoEgreso = AñoActual - Integer.parseInt(estudiante.getAñoegresocolegio());
 
             if(AñoEgreso < 1) {
                 descuento += 0.15;
@@ -100,7 +125,7 @@ public class CuotaService {
             for(int i = 0; i < cuotas; i++) {
                 CuotaEntity cuota = new CuotaEntity();
                 cuota.setTipo(String.format("Cuota %d", i + 1));
-                cuota.setId_estudiante(id_estudiante);
+                cuota.setIdEstudiante(idEstudiante);
                 cuota.setMonto(valorCuota);
                 cuota.setMontoBase(valorCuota);
                 cuota.setEstado(false);
@@ -147,8 +172,8 @@ public class CuotaService {
     }
 
     @Transactional
-    public void pagarCuota(Long id_estudiante, String tipo) {
-        CuotaEntity cuota = cuotaRepository.findByIdAndTipoNativeQuery(id_estudiante, tipo);
+    public void pagarCuota(Long idEstudiante, String tipo) {
+        CuotaEntity cuota = cuotaRepository.findByIdAndTipoNativeQuery(idEstudiante, tipo);
 
         if (cuota != null && !cuota.getEstado()) {
             if (!cuota.getTipo().equals("Unica Cuota")) {
@@ -173,8 +198,11 @@ public class CuotaService {
         }
     }
 
-    public List<CuotaEntity> obtenerCuotasConInteres(Long id_estudiante, Double puntajePromedio) {
-        List<CuotaEntity> cuotas = obtenerCuotasEstudiante(id_estudiante);
+
+    public List<CuotaEntity> obtenerCuotasConInteres(Long idEstudiante) {
+        List<CuotaEntity> cuotas = obtenerCuotasEstudiante(idEstudiante);
+        EstudianteModel estudiante = buscarEstudiante(idEstudiante);
+        Double puntajePromedio = obtenerPuntajePromedio(estudiante.getRut());
         Double descuento = calcularDescuento(puntajePromedio);
 
         cuotas.forEach(cuota -> {
@@ -191,8 +219,10 @@ public class CuotaService {
         return cuotas;
     }
 
-    public Double MontoTotal(Long id_estudiante, Double puntajePromedio){
-        List<CuotaEntity> cuotas = obtenerCuotasEstudiante(id_estudiante);
+    public Double MontoTotal(Long idEstudiante){
+        List<CuotaEntity> cuotas = obtenerCuotasEstudiante(idEstudiante);
+        EstudianteModel estudiante = buscarEstudiante(idEstudiante);
+        Double puntajePromedio = obtenerPuntajePromedio(estudiante.getRut());
         Double descuento = calcularDescuento(puntajePromedio);
         double[] MontoTotalArr = {0.0};
 
@@ -209,18 +239,18 @@ public class CuotaService {
         return MontoTotalArr[0];
     }
 
-    public int numeroCuotasPagadas(Long id_estudiante) {
-        List<CuotaEntity> cuotas = obtenerCuotasEstudiante(id_estudiante);
+    public int numeroCuotasPagadas(Long idEstudiante) {
+        List<CuotaEntity> cuotas = obtenerCuotasEstudiante(idEstudiante);
         return (int) cuotas.stream().filter(CuotaEntity::getEstado).count();
     }
 
-    public Double montoTotalPagado(Long id_estudiante) {
-        List<CuotaEntity> cuotas = obtenerCuotasEstudiante(id_estudiante);
+    public Double montoTotalPagado(Long idEstudiante) {
+        List<CuotaEntity> cuotas = obtenerCuotasEstudiante(idEstudiante);
         return cuotas.stream().filter(CuotaEntity::getEstado).mapToDouble(CuotaEntity::getMonto).sum();
     }
 
-    public LocalDate fechaUltimoPago(Long id_estudiante) {
-        List<CuotaEntity> cuotasPagadas = obtenerCuotasEstudiante(id_estudiante).stream()
+    public LocalDate fechaUltimoPago(Long idEstudiante) {
+        List<CuotaEntity> cuotasPagadas = obtenerCuotasEstudiante(idEstudiante).stream()
                 .filter(CuotaEntity::getEstado)
                 .filter(cuota -> cuota.getFechapago() != null)
                 .toList();
@@ -232,17 +262,18 @@ public class CuotaService {
     }
 
 
-    public Double saldoPorPagar(Long id_estudiante) {
-        List<CuotaEntity> cuotas = obtenerCuotasEstudiante(id_estudiante);
+    public Double saldoPorPagar(Long idEstudiante) {
+        List<CuotaEntity> cuotas = obtenerCuotasEstudiante(idEstudiante);
         return cuotas.stream().filter(cuota -> !cuota.getEstado()).mapToDouble(CuotaEntity::getMonto).sum();
     }
 
-    public Long numeroCuotasConRetraso(Long id_estudiante) {
+    public Long numeroCuotasConRetraso(Long idEstudiante) {
         LocalDate today = LocalDate.now();
-        List<CuotaEntity> cuotas = obtenerCuotasEstudiante(id_estudiante);
+        List<CuotaEntity> cuotas = obtenerCuotasEstudiante(idEstudiante);
         return cuotas.stream()
                 .filter(cuota -> !cuota.getEstado() && !cuota.getTipo().equals("Matricula")
                         && cuota.getVencimiento().isBefore(today))
                 .count();
     }
+
 }

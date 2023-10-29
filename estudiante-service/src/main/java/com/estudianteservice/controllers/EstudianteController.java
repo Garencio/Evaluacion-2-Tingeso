@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 @RestController
 @RequestMapping("/estudiantes")
 public class EstudianteController {
@@ -15,7 +16,7 @@ public class EstudianteController {
     EstudianteService estudianteService;
 
 
-    @GetMapping
+    @GetMapping("/listado")
     public ResponseEntity<List<EstudianteEntity>> obtenerEstudiantes(){
         List<EstudianteEntity> estudiantes = estudianteService.obtenerTodosLosEstudiantes();
         if(estudiantes.isEmpty())
@@ -28,4 +29,9 @@ public class EstudianteController {
         estudianteService.guardarEstudiante(estudiante);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<EstudianteEntity> obtenerEstudiantePorId(@PathVariable("id") Long id){
+        EstudianteEntity estudiante = estudianteService.findEstudianteById(id);
+        return ResponseEntity.ok(estudiante);
+    }
 }

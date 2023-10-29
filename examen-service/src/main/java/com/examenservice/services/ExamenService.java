@@ -1,11 +1,13 @@
 package com.examenservice.services;
 
 import com.examenservice.entities.ExamenEntity;
+import com.examenservice.models.ResumenModel;
 import com.examenservice.repositories.ExamenRepository;
 import lombok.Generated;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
@@ -17,6 +19,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class ExamenService {
 
     @Autowired
