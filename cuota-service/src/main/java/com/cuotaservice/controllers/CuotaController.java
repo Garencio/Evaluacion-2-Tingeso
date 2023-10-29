@@ -1,6 +1,7 @@
 package com.cuotaservice.controllers;
 
 import com.cuotaservice.entities.CuotaEntity;
+import com.cuotaservice.models.CuotaResumenModel;
 import com.cuotaservice.models.EstudianteModel;
 import com.cuotaservice.services.CuotaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,12 @@ public class CuotaController {
     @PostMapping("/pagar-cuota")
     public void pagarCuota(@RequestParam Long idEstudiante, @RequestParam String tipo){
         cuotaService.pagarCuota(idEstudiante, tipo);
+    }
+
+    @GetMapping("/resumen/{idEstudiante}")
+    public ResponseEntity<CuotaResumenModel> obtenerResumen(@PathVariable Long idEstudiante) {
+        CuotaResumenModel resumen = cuotaService.obtenerResumenCuotas(idEstudiante);
+        return ResponseEntity.ok(resumen);
     }
 
 }

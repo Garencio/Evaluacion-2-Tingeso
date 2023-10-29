@@ -1,6 +1,8 @@
 package com.examenservice.services;
 
 import com.examenservice.entities.ExamenEntity;
+import com.examenservice.models.CuotaResumenModel;
+import com.examenservice.models.EstudianteModel;
 import com.examenservice.models.ResumenModel;
 import com.examenservice.repositories.ExamenRepository;
 import lombok.Generated;
@@ -8,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
@@ -24,6 +27,9 @@ public class ExamenService {
 
     @Autowired
     ExamenRepository examenRepository;
+
+    @Autowired
+    RestTemplate restTemplate;
 
     private final Logger logger = LoggerFactory.getLogger(ExamenService.class);
 
@@ -109,6 +115,28 @@ public class ExamenService {
             suma += Double.parseDouble(examen.getPuntaje());
         }
         return suma / examenes.size();
+    }
+
+    public ResumenModel obtenerResumen(Long idEstudiante) {
+        ResumenModel resumen = new ResumenModel();
+
+        CuotaResumenModel resumenCuotas = restTemplate.getForObject("http://cuota-service/cuotas/resumen/" + idEstudiante, CuotaResumenModel.class);
+        EstudianteModel estudiante = restTemplate.getForObject("http://estudiante-service/estudiantes/" + idEstudiante, EstudianteModel.class);
+
+        resumen.setRut(estudiante.getRut());
+        resumen.setNombre(estudiante.getNombres());
+        resumen.setNumeroExamenesRendidos(obtenerNumeroExamenesRendidosPorRut(estudiante.getRut()));
+        resumen.setPromedioPuntajeExamenes(calcularPuntajePromedio(estudiante.getRut()));
+        resumen.setMontoTotalAPagar(resumen.getMontoTotalAPagar());
+        resumen.setTipoPago(estudiante.getTipodepago());
+        resumen.setNumeroTotalCuotasPactadas(estudiante.getCantidad_cuotas());
+        resumen.setNumeroCuotasPagadas(resumenCuotas.getNumeroCuotasPagadas());
+        resumen.setMontoTotalPagado(resumenCuotas.getMontoTotalPagado());
+        resumen.setFechaUltimoPago(resumenCuotas.getFechaUltimoPago());
+        resumen.setSaldoPorPagar(resumenCuotas.getSaldoPorPagar());
+        resumen.setNumeroCuotasConRetraso(resumenCuotas.getNumeroCuotasConRetraso());
+
+        return resumen;
     }
 
 }

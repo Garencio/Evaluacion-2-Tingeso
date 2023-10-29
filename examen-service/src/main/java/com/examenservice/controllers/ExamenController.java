@@ -1,6 +1,7 @@
 package com.examenservice.controllers;
 
 import com.examenservice.entities.ExamenEntity;
+import com.examenservice.models.ResumenModel;
 import com.examenservice.services.ExamenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -37,5 +38,11 @@ public class ExamenController {
         redirectAttributes.addFlashAttribute("mensaje", "Archivo cargado correctamente");
         examenService.leerCsv("Examenes.csv");
     }
-    
+
+    @GetMapping("/resumen/{idEstudiante}")
+    public ResponseEntity<ResumenModel> obtenerResumenEstudiante(@PathVariable Long idEstudiante) {
+        ResumenModel resumen = examenService.obtenerResumen(idEstudiante);
+        return ResponseEntity.ok(resumen);
+    }
+
 }

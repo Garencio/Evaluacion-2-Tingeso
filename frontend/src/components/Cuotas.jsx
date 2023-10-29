@@ -81,7 +81,7 @@ function Cuotas() {
             <p>Nombres: {estudiante.nombres}</p>
 
             <div style={{ textAlign: 'center', marginTop: '20px' }}>
-                <a href={`/resumen/${estudiante.id}`} className="btnResumen">Ver Resumen</a>
+                <a href={`/examenes/resumen/${id}`} className="btnResumen">Ver Resumen</a>
             </div>
 
             <h2>Cuotas</h2>

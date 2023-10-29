@@ -7,6 +7,7 @@ import Listado from './components/Listado.jsx';
 import Cuotas from './components/Cuotas.jsx';
 import Examenes from './components/Examenes.jsx';
 import Upload from './components/Upload.jsx';
+import Resumen from './components/Resumen.jsx';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/cuotas/:id" element={<Cuotas/>} />
           <Route path="/examenes" element={<Examenes/>} />
           <Route path="/examenes/upload" element={<Upload/>} />
+          <Route path="/examenes/resumen/:id" element={<Resumen/>} />
         </Routes>
         
       </div>

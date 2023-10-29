@@ -1,6 +1,7 @@
 package com.cuotaservice.services;
 
 import com.cuotaservice.entities.CuotaEntity;
+import com.cuotaservice.models.CuotaResumenModel;
 import com.cuotaservice.models.EstudianteModel;
 import com.cuotaservice.repositories.CuotaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -275,5 +276,19 @@ public class CuotaService {
                         && cuota.getVencimiento().isBefore(today))
                 .count();
     }
+
+    public CuotaResumenModel obtenerResumenCuotas(Long idEstudiante) {
+        CuotaResumenModel resumen = new CuotaResumenModel();
+
+        resumen.setMontoTotal(MontoTotal(idEstudiante));
+        resumen.setNumeroCuotasPagadas(numeroCuotasPagadas(idEstudiante));
+        resumen.setMontoTotalPagado(montoTotalPagado(idEstudiante));
+        resumen.setFechaUltimoPago(fechaUltimoPago(idEstudiante));
+        resumen.setSaldoPorPagar(saldoPorPagar(idEstudiante));
+        resumen.setNumeroCuotasConRetraso(numeroCuotasConRetraso(idEstudiante));
+
+        return resumen;
+    }
+
 
 }
