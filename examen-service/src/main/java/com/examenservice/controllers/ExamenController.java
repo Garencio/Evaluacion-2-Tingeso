@@ -32,11 +32,10 @@ public class ExamenController {
     }
 
     @PostMapping("/upload")
-    public String upload(@RequestParam("archivo") MultipartFile archivo, RedirectAttributes redirectAttributes) {
+    public void upload(@RequestParam("archivo") MultipartFile archivo, RedirectAttributes redirectAttributes) {
         examenService.guardar(archivo);
         redirectAttributes.addFlashAttribute("mensaje", "Archivo cargado correctamente");
         examenService.leerCsv("Examenes.csv");
-        return "redirect:/upload";
     }
     
 }

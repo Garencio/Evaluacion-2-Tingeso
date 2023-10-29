@@ -19,30 +19,40 @@ function Cuotas() {
             .then(data => {
                 setEstudiante(data.estudiante);
                 setCuotas(data.cuotas);
+                if (data.cuotas.length === 1) {
+                    setTipoSeleccionado(data.cuotas[0].tipo);
+                }
+                else if (data.cuotas.length  > 0) {
+                    setTipoSeleccionado(data.cuotas[1].tipo);
+                }
             })
             .catch(error => console.error('Hubo un error al obtener los datos:', error));
         
     }, [id]);
 
     const matriculaPagada = cuotas.some(cuota => cuota.tipo === 'Matricula' && cuota.estado);
+    
 
     function pagar(tipo) {
         let url;
         let data;
 
+        if (!tipoSeleccionado) {
+            console.error('Tipo de cuota no seleccionado.');
+            return;
+        }
+    
         if (tipo === 'matricula') {
             url = `http://localhost:8080/cuotas/pagar-matricula/${id}`;
             data = { method: 'POST' };
         } else {
-            url = `http://localhost:8080/cuotas/pagar-cuota`;
+            url = `http://localhost:8080/cuotas/pagar-cuota?idEstudiante=${id}&tipo=${tipoSeleccionado}`;
             data = {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ idEstudiante: id, tipo: tipoSeleccionado })
+                method: 'POST'
             };
         }
+        
+        console.log("Datos enviados:", { idEstudiante: id, tipo: tipoSeleccionado });
 
         fetch(url, data)
             .then(response => {
@@ -52,16 +62,15 @@ function Cuotas() {
                 return response.json();
             })
             .then(() => {
-                
-                fetch(`http://localhost:8080/cuotas/${id}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        setEstudiante(data.estudiante);
-                        setCuotas(data.cuotas);
-                    });
+                return fetch(`http://localhost:8080/cuotas/${id}`);
+            })
+            .then(data => {
+                setEstudiante(data.estudiante);
+                setCuotas(data.cuotas);
             })
             .catch(error => console.error('Error:', error));
     }
+    
 
     return (
         <div>
@@ -104,12 +113,18 @@ function Cuotas() {
             )}
 
             <div>
-                <select onChange={e => setTipoSeleccionado(e.target.value)}>
-                    {cuotas.map(cuota => (
-                        <option key={cuota.id} value={cuota.tipo}>{cuota.tipo}</option>
-                    ))}
-                </select>
-                <button onClick={() => pagar('cuota')}>Pagar Cuota Seleccionada</button>
+                {cuotas.filter(cuota => !cuota.estado).length > 0 ? (
+                    <>
+                        <select onChange={e => setTipoSeleccionado(e.target.value)}>
+                            {cuotas.filter(cuota => !cuota.estado).map(cuota => (
+                                <option key={cuota.id} value={cuota.tipo}>{cuota.tipo}</option>
+                            ))}
+                        </select>
+                        <button onClick={() => pagar('cuota')}>Pagar Cuota Seleccionada</button>
+                    </>
+                ) : (
+                    <p>No hay cuotas pendientes de pago.</p>
+                )}
             </div>
         </div>
     );

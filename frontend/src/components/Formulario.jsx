@@ -23,9 +23,19 @@ function Formulario() {
         }));
     };
 
+    const validarRUT = (rut) => {
+        const regex = /^\d{2}\.\d{3}\.\d{3}-[\dkK]$/;
+        return regex.test(rut);
+    }
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         
+        if (!validarRUT(formData.rut)) {
+            alert('Formato de RUT inválido. Debe ser del formato xx.xxx.xxx-x');
+            return;
+        }
+
         try {
             const response = await fetch('http://localhost:8080/estudiantes', {
                 method: 'POST',
@@ -104,7 +114,14 @@ function Formulario() {
             <div className="titulo-formulario">Formulario estudiante</div>
             <form onSubmit={handleSubmit}>
                 <label htmlFor="rut">Rut:</label>
-                <input type="text" id="rut" name="rut" value={formData.rut} onChange={handleInputChange} required /><br />
+                <input type="text" 
+                       id="rut" 
+                       name="rut" 
+                       value={formData.rut} 
+                       onChange={handleInputChange} 
+                       pattern="\d{2}\.\d{3}\.\d{3}-[\dkK]" 
+                       title="El RUT debe tener el formato xx.xxx.xxx-x" 
+                       required /><br />
 
                 <label htmlFor="apellidos">Apellidos:</label>
                 <input type="text" id="apellidos" name="apellidos" value={formData.apellidos} onChange={handleInputChange} required /><br />

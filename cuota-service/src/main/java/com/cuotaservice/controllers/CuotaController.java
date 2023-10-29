@@ -46,9 +46,8 @@ public class CuotaController {
     }
 
     @PostMapping("/pagar-cuota")
-    public String pagarCuota(@RequestParam Long idEstudiante, @RequestParam String tipo){
+    public void pagarCuota(@RequestParam Long idEstudiante, @RequestParam String tipo){
         cuotaService.pagarCuota(idEstudiante, tipo);
-        return "redirect:/cuotas/" + idEstudiante;
     }
 
 }

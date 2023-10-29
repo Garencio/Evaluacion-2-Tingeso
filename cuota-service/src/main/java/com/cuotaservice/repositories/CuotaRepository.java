@@ -11,8 +11,8 @@ import java.util.List;
 @Repository
 public interface CuotaRepository extends CrudRepository<CuotaEntity, Long> {
 
-    @Query(value = "Select * FROM cuota WHERE idEstudiante = :idEstudiante AND tipo = :tipo", nativeQuery = true)
-    CuotaEntity findByIdAndTipoNativeQuery(@Param("idEstudiante") Long idEstudiante, @Param("tipo") String tipo);
+    @Query(value = "Select * FROM cuota WHERE id_estudiante = :id_estudiante AND tipo = :tipo", nativeQuery = true)
+    CuotaEntity findByIdAndTipoNativeQuery(@Param("id_estudiante") Long id_estudiante, @Param("tipo") String tipo);
 
     List<CuotaEntity> findByIdEstudiante(Long idEstudiante);
 }
