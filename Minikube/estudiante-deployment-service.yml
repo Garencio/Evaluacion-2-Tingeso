@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: estudiantes-deployment
+  name: estudiante-deployment
   labels:
-    app: estudiantes-deployment
+    app: estudiante-deployment
 spec:
   selector:
     matchLabels:
-      app: estudiantes-deployment
+      app: estudiante-deployment
   replicas: 1
   template:
     metadata:
       labels:
-        app: estudiantes-deployment
+        app: estudiante-deployment
     spec:
       containers:
-        - name: estudiantes-postgres
-          image: garencio/estudiantes-postgres:latest
+        - name: estudiante-postgres
+          image: garencio/estudiante-postgres:latest
           ports:
             - containerPort: 8081
           env:
@@ -50,12 +50,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: estudiantes-service
+  name: estudiante-service
   labels:
-    app: estudiantes-service
+    app: estudiante-service
 spec:
   selector:
-    app: estudiantes-deployment
+    app: estudiante-deployment
   ports:
     - protocol: TCP
       port: 8085

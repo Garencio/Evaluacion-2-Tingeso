@@ -1,0 +1,100 @@
+cd config-service
+mvn clean install -DskipTests=True
+docker build -t garencio/config-postgres .
+docker push garencio/config-postgres
+cd ../
+
+cd eureka-service
+mvn clean install -DskipTests=True
+docker build -t garencio/eureka-postgres .
+docker push garencio/eureka-postgres
+cd ../
+
+cd gateway-service
+mvn clean install -DskipTests=True
+docker build -t garencio/gateway-postgres .
+docker push garencio/gateway-postgres
+cd ../
+
+cd estudiantes-service
+mvn clean install -DskipTests=True
+docker build -t garencio/estudiantes-postgres .
+docker push garencio/estudiantes-postgres
+cd ../
+
+cd cuotas-service
+mvn clean install -DskipTests=True
+docker build -t garencio/cuotas-postgres .
+docker push garencio/cuotas-postgres
+cd ../
+
+cd examen-service
+mvn clean install -DskipTests=True
+docker build -t garencio/examen-postgres .
+docker push garencio/examen-postgres
+cd ../
+
+cd frontend
+docker build -t garencio/frontend-postgres .
+docker push garencio/frontend-postgres
+cd ../
+
+
+-----Inicio-------
+minikube start
+minikube status
+kubectl get pods
+
+------Ejecutar----------
+
+kubectl apply -f frontend-deployment-service.yml
+
+kubectl apply -f postgres-secrets.yml
+kubectl apply -f postgres-configmap.yml
+kubectl apply -f postgres-dp-sv-pvc.yml
+
+kubectl apply -f config-deployment-service.yml
+
+kubectl apply -f eureka-deployment-service.yml
+
+kubectl apply -f estudiante-deployment-service.yml
+kubectl apply -f cuota-deployment-service.yml
+kubectl apply -f examen-deployment-service.yml
+kubectl apply -f gateway-deployment-service.yml
+
+minikube service frontend-service
+minikube tunnel
+
+------Borrar----------
+
+kubectl delete deployments frontend-deployment
+kubectl delete services frontend-service
+
+kubectl delete deployments postgres
+kubectl delete services postgres
+kubectl delete PersistentVolumeClaims postgres-persistent-volume-claim
+kubectl delete PersistentVolumes postgres-persistent-volume-claim
+
+kubectl delete ConfigMap postgres-config-map
+
+kubectl delete Secret postgres-credentials
+
+kubectl delete deployments config-deployment
+kubectl delete services config-service
+
+kubectl delete deployments eureka-deployment
+kubectl delete services eureka-service
+
+kubectl delete deployments gateway-deployment
+kubectl delete services gateway-service
+
+kubectl delete deployments estudiante-deployment
+kubectl delete services estudiante-service
+
+kubectl delete deployments cuota-deployment
+kubectl delete services cuota-service
+
+kubectl delete deployments examen-deployment
+kubectl delete services examen-service
+
+minikube stop
