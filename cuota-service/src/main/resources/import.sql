@@ -1,0 +1,3 @@
+INSERT INTO cuota(estado, fechapago, id_estudiante, monto, monto_base, tipo, vencimiento) VALUES ('0', NULL, '1', '70000', '70000', 'Matricula', NULL);
+INSERT INTO cuota(estado, fechapago, id_estudiante, monto, monto_base, tipo, vencimiento) VALUES ('0', NULL, '2', '70000', '70000', 'Matricula', NULL);
+INSERT INTO cuota(estado, fechapago, id_estudiante, monto, monto_base, tipo, vencimiento) VALUES ('0', NULL, '3', '70000', '70000', 'Matricula', NULL);
