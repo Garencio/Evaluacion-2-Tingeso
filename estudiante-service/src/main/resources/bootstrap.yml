@@ -17,6 +17,6 @@ spring:
   datasource:
     plataform: postgres
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/EstudianteBD?autorReconnect=true&allowPublicKeyRetrieval=true&useSSL=false
-    username: postgres
-    password: 1503
+    url: jdbc:postgresql://${POSTGRES_DB_HOST}:5432/${POSTGRES_DB_ESTUDIANTES}?autorReconnect=true&allowPublicKeyRetrieval=true&useSSL=false
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
