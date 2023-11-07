@@ -16,16 +16,16 @@ docker build -t garencio/gateway-postgres .
 docker push garencio/gateway-postgres
 cd ../
 
-cd estudiantes-service
+cd estudiante-service
 mvn clean install -DskipTests=True
-docker build -t garencio/estudiantes-postgres .
-docker push garencio/estudiantes-postgres
+docker build -t garencio/estudiante-postgres .
+docker push garencio/estudiante-postgres
 cd ../
 
-cd cuotas-service
+cd cuota-service
 mvn clean install -DskipTests=True
-docker build -t garencio/cuotas-postgres .
-docker push garencio/cuotas-postgres
+docker build -t garencio/cuota-postgres .
+docker push garencio/cuota-postgres
 cd ../
 
 cd examen-service
