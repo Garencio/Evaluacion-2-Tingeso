@@ -14,7 +14,7 @@ spring:
     config:
       enabled: true
       uri: http://localhost:8081
-  datasource:
+  datasour ce:
     plataform: postgres
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://${POSTGRES_DB_HOST}:5432/${POSTGRES_DB_ESTUDIANTES}?autorReconnect=true&allowPublicKeyRetrieval=true&useSSL=false

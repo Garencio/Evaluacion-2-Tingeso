@@ -55,6 +55,16 @@ kubectl apply -f postgres-dp-sv-pvc.yml
 
 kubectl apply -f config-deployment-service.yml
 
+------Crear Bases de datos (Abrir otro cmd)----------
+
+kubectl exec -it <Name pods postgres> bash -- psql -h postgres -U postgres
+
+CREATE DATABASE CuotaBD;
+CREATE DATABASE EstudianteBD;
+CREATE DATABASE ExamenBD;
+
+-------Seguir ejecutando---------
+
 kubectl apply -f eureka-deployment-service.yml
 
 kubectl apply -f estudiante-deployment-service.yml

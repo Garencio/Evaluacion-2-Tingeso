@@ -7,8 +7,8 @@ metadata:
 data:
   POSTGRES_DB_HOST: postgres
   #base de dato Cuotas
-  POSTGRES_DB_CUOTAS: CuotaBD
+  POSTGRES_DB_CUOTAS: cuotabd
   #base de dato Estudiantes
-  POSTGRES_DB_ESTUDIANTES: EstudianteBD
+  POSTGRES_DB_ESTUDIANTES: estudiantebd
   #base de dato Examen
-  POSTGRES_DB_EXAMEN: ExamenBD
+  POSTGRES_DB_EXAMEN: examenbd
